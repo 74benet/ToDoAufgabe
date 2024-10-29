@@ -1,6 +1,6 @@
 package com.example.details;
 
-public class BookDetails {
+public class BookDetailsDTO {
     private Long id;
     private String author;
     private String title;
@@ -11,7 +11,7 @@ public class BookDetails {
     private String isbn;
     private int pages;
 
-    public BookDetails(Long id, String author, String title, String type, String publisher, int year, String language, String isbn, int pages) {
+    public BookDetailsDTO(Long id, String author, String title, String type, String publisher, int year, String language, String isbn, int pages) {
         this.id = id;
         this.author = author;
         this.title = title;
@@ -21,14 +21,6 @@ public class BookDetails {
         this.language = language;
         this.isbn = isbn;
         this.pages = pages;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     public String getAuthor() {
@@ -93,5 +85,13 @@ public class BookDetails {
 
     public void setPages(int pages) {
         this.pages = pages;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

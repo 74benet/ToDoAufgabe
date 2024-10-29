@@ -1,11 +1,11 @@
 package com.example.books;
 
-public class Book {
+public class BookDTO {
     private Long id;
     private String author;
     private String title;
 
-    public Book(Long id, String author, String title) {
+    public BookDTO(Long id, String author, String title) {
         this.id = id;
         this.author = author;
         this.title = title;
