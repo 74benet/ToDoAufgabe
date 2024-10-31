@@ -8,22 +8,21 @@ import java.util.Optional;
 import java.util.Set;
 
 @RestController
-public class BookController {
+public class BookListController {
 
     private final BookService bookService;
 
-    public BookController(BookService bookService) {
+    public BookListController(BookService bookService) {
         this.bookService = bookService;
     }
 
     @GetMapping("/")
-    public Set<Book> getAllBooks() {
+    public Set<BookDTO> getAllBooks() {
         return bookService.getAllBooks();
     }
 
     @GetMapping("/{id}")
-    public Book getBookById(@PathVariable Long id) {
-        Optional<Book> book = bookService.getBookById(id);
-        return book.orElse(null);
+    public Optional<BookDTO> getBookById(@PathVariable Long id) {
+        return bookService.getBookById(id);
     }
 }

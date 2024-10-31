@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class ReviewService {
@@ -14,11 +15,14 @@ public class ReviewService {
         this.reviewRepository = reviewRepository;
     }
 
-    public Set<Review> getAllReviews() {
-        return reviewRepository.findAll();
+    public Set<ReviewDTO> getAllReviews() {
+        return reviewRepository.findAll().stream()
+                .map(review -> new ReviewDTO(review.getId(), review.getReviewer(), review.getText()))
+                .collect(Collectors.toSet());
     }
 
-    public Optional<Review> getReviewById(Long id) {
-        return reviewRepository.findById(id);
+    public Optional<ReviewDTO> getReviewById(Long id) {
+        return reviewRepository.findById(id)
+                .map(review -> new ReviewDTO(review.getId(), review.getReviewer(), review.getText()));
     }
 }

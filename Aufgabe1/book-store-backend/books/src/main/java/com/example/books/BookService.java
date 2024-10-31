@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class BookService {
@@ -14,11 +15,16 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
-    public Set<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public Set<BookDTO> getAllBooks() {
+
+        return bookRepository.findAll().stream()
+                .map(book -> new BookDTO(book.getId(), book.getAuthor(), book.getTitle()))
+                .collect(Collectors.toSet());
     }
 
-    public Optional<Book> getBookById(Long id) {
-        return bookRepository.findById(id);
+    public Optional<BookDTO> getBookById(Long id) {
+
+        return bookRepository.findById(id)
+                .map(book -> new BookDTO(book.getId(), book.getAuthor(), book.getTitle()));
     }
 }

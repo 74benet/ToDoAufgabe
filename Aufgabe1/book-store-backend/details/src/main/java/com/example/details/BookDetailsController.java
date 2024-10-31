@@ -1,4 +1,4 @@
-package com.example.details ;
+package com.example.details;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,13 +17,12 @@ public class BookDetailsController {
     }
 
     @GetMapping("/")
-    public Set<BookDetails> getAllBooks() {
+    public Set<BookDetailsDTO> getAllBooks() {
         return bookDetailsService.getAllBooks();
     }
 
     @GetMapping("/{id}")
-    public BookDetails getBookById(@PathVariable Long id) {
-        Optional<BookDetails> book = bookDetailsService.getBookById(id);
-        return book.orElse(null);
+    public Optional<BookDetailsDTO> getBookById(@PathVariable Long id) {
+        return bookDetailsService.getBookById(id);
     }
 }
