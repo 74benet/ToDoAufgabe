@@ -17,16 +17,14 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DrawerValue
+import androidx.compose.material3.DrawerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.ModalNavigationDrawer
@@ -35,10 +33,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,7 +56,13 @@ import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookShelfApp() {
+fun BookShelfApp(
+    notificationsEnabled: MutableState<Boolean>,
+    onToggleNotifications: (Boolean) -> Unit,
+    onNotificationClick: () -> Unit,
+    onSettingsClick: () -> Unit,
+    drawerState: DrawerState
+) {
 
     var selectedBookDetails by remember { mutableStateOf<BookDetails?>(null) }
     var selectedBookReviews by remember { mutableStateOf<List<Review>>(emptyList()) }
@@ -66,14 +70,9 @@ fun BookShelfApp() {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val coroutineScope = rememberCoroutineScope()
 
-    // DrawerState und coroutineScope für die Steuerung des Drawers
-    val drawerState = rememberDrawerState(DrawerValue.Closed)
-
-    // Zustand für Buchliste, Buchdetails und Fehlerbehandlung hinzufügen
     var books by remember { mutableStateOf<List<BookSummary>>(emptyList()) }
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
-// Buchliste bei Start laden
     LaunchedEffect(Unit) {
         coroutineScope.launch {
             try {
@@ -90,7 +89,11 @@ fun BookShelfApp() {
 
     ModalNavigationDrawer(
         drawerContent = {
-            SettingsDrawerContent(onClose = { coroutineScope.launch { drawerState.close() } })
+            SettingsDrawerContent(
+                notificationsEnabled = notificationsEnabled,
+                onToggleNotifications = onToggleNotifications,
+                onSimulateNotification = onNotificationClick
+            )
         },
         drawerState = drawerState
     ) {
@@ -101,12 +104,12 @@ fun BookShelfApp() {
                     colors = TopAppBarDefaults.topAppBarColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         titleContentColor = MaterialTheme.colorScheme.onPrimary
-                    )
+                    ),
                 )
             },
             floatingActionButton = {
                 ExtendedFloatingActionButton(
-                    onClick = { coroutineScope.launch { drawerState.open() } }, // Öffnet den Drawer
+                    onClick = onSettingsClick,
                     icon = {
                         Icon(
                             imageVector = Icons.Default.Settings,
@@ -133,7 +136,7 @@ fun BookShelfApp() {
                             try {
                                 selectedBookDetails = ApiClient.service.getBookDetails(book.id) // Lade Buchdetails
                                 selectedBookReviews = ApiClient.service.getBookReviews(book.id) // Lade Reviews
-                                sheetState.show() // Zeige BottomSheet an
+                                sheetState.show()
                             } catch (e: Exception) {
                                 errorMessage = "Fehler beim Laden der Buchdetails: ${e.message}"
                             }
@@ -161,7 +164,11 @@ fun BookShelfApp() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SettingsDrawerContent(onClose: () -> Unit) {
+fun SettingsDrawerContent(
+    notificationsEnabled: MutableState<Boolean>,
+    onToggleNotifications: (Boolean) -> Unit,
+    onSimulateNotification: () -> Unit
+) {
     Surface(
         color = MaterialTheme.colorScheme.background,
         modifier = Modifier
@@ -174,23 +181,10 @@ fun SettingsDrawerContent(onClose: () -> Unit) {
         ) {
             TopAppBar(
                 title = { Text("Settings") },
-                navigationIcon = {
-                    IconButton(onClick = onClose) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Close Settings"
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
             )
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            var notificationsEnabled by remember { mutableStateOf(false) }
 
             Row(
                 modifier = Modifier
@@ -199,27 +193,32 @@ fun SettingsDrawerContent(onClose: () -> Unit) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Notifications",
+                    text = "Enable Notifications",
                     fontSize = 18.sp,
                     modifier = Modifier.weight(1f)
                 )
                 Checkbox(
-                    checked = notificationsEnabled,
-                    onCheckedChange = { notificationsEnabled = it }
+
+                    checked = notificationsEnabled.value,
+                    onCheckedChange = { isChecked ->
+                        notificationsEnabled.value = isChecked
+                        onToggleNotifications(isChecked)
+                    }
                 )
             }
-            Button(
-                onClick = { /* Noch keine Aktion */ },
-                modifier = Modifier
-                    .padding(top = 16.dp,start = 16.dp, end = 16.dp)
 
+            Button(
+                onClick = onSimulateNotification,
+                enabled = notificationsEnabled.value,
+                modifier = Modifier
+                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)
             ) {
                 Text("Simulate Notification")
             }
         }
-
     }
 }
+
 
 
 @Composable
@@ -273,7 +272,7 @@ fun BookItem(book: BookSummary, onClick: () -> Unit) {
             Text(
                 text = book.author,
                 fontSize = 12.sp,
-                color = textColor.copy(alpha = 0.7f) // Alpha-Wert für sekundären Text
+                color = textColor.copy(alpha = 0.7f)
             )
         }
     }
