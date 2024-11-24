@@ -1,4 +1,11 @@
-package edu.hhn.widgetspushnotifications;
+package edu.hhn.widgetspushnotifications
 
-public class SharedViewModel {
+import androidx.lifecycle.ViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+class CounterViewModel : ViewModel() {
+    val _counter = MutableStateFlow(0)
+    val counter: StateFlow<Int> = _counter.asStateFlow()
 }
