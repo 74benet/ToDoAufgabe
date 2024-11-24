@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "416150571627",
+    "project_id": "mpc-widgetspushnotifications",
+    "storage_bucket": "mpc-widgetspushnotifications.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:416150571627:android:28ee241d6510c7fc537f2e",
+        "android_client_info": {
+          "package_name": "edu.hhn.firebaseconnector"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD48TXDynL8rYPKkN7mXuBt4BxQXYAQkHI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:416150571627:android:a72db0fa11949976537f2e",
+        "android_client_info": {
+          "package_name": "edu.hhn.widgetspushnotifications"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD48TXDynL8rYPKkN7mXuBt4BxQXYAQkHI"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
