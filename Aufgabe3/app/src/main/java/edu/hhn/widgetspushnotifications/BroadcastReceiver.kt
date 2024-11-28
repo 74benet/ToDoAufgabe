@@ -14,11 +14,9 @@ class CounterUpdateReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         val counter = intent.getIntExtra("counter", 0)
 
-        // Update ViewModel
         val viewModel = ViewModelProvider(context as ComponentActivity)[CounterViewModel::class.java]
         viewModel._counter.value = counter
 
-        // Update widget state
         val manager = GlanceAppWidgetManager(context)
         GlobalScope.launch {
             manager.getGlanceIds(BroadcastWidget::class.java).forEach { glanceId ->

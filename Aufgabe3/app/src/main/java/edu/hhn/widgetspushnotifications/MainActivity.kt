@@ -11,10 +11,15 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -23,6 +28,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,9 +53,7 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            // Permission granted, you can enable notification features here
         } else {
-            // Permission denied, inform the user and possibly disable notification features
             Toast.makeText(this, "Notification permission denied", Toast.LENGTH_SHORT).show()
         }
     }
@@ -63,12 +67,11 @@ class MainActivity : ComponentActivity() {
             IntentFilter("COUNTER_UPDATE_ACTION"),
             Context.RECEIVER_EXPORTED
         )
-        // Permissions erst nach setContent anfragen
+
         setContent {
             MainScreen(viewModel)
         }
 
-        // Permissions nach setContent anfordern
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             requestPermissionLauncher.launch(android.Manifest.permission.POST_NOTIFICATIONS)
         }
@@ -89,22 +92,33 @@ fun MainScreen(viewModel: CounterViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        Text("Counter: ${viewModel.counter.collectAsState().value}")
+        Text(
+            text = "Counter: ${viewModel.counter.collectAsState().value}",
+            style = MaterialTheme.typography.headlineMedium
+        )
         TextField(
             value = message,
             onValueChange = { message = it },
-            label = { Text("Message") }
+            label = { Text("Message") },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(8.dp)
         )
-        Button(onClick = {
-            NotificationHelper.sendNotification(
-                "Counter Broadcast",
-                message
-            ) { success, response ->
-
-            }
-        }) {
+        Button(
+            onClick = {
+                NotificationHelper.sendNotification(
+                    "Counter Broadcast",
+                    "Message: $message\nCounter: ${viewModel.counter.value}"
+                ) { success, response -> }
+            },
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(50.dp),
+            shape = RoundedCornerShape(8.dp)
+        ) {
             Text("Send Message")
         }
     }
